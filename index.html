@@ -27,7 +27,7 @@
     cursor:pointer; transition:0.3s; box-shadow:0 6px 15px rgba(0,0,0,0.15);
     border-top:5px solid #0f4c81;
   }
-  .shift-card:hover { transform:translateY(-5px); }
+  .shift-card:hover { transform:translateY(-5px); box-shadow:0 12px 25px rgba(0,0,0,0.25); }
   .shift-card .icon { font-size:45px; margin-bottom:15px; display:block; }
   .shift-card h2 { color:#0f4c81; font-size:24px; margin-bottom:5px; }
   .shift-card .desc { color:#666; font-size:14px; margin-bottom:15px; }
@@ -70,6 +70,37 @@
   }
   .btn-back:hover { background: #0f4c81; color: white; }
 
+  /* --- WORK LOG FORM STYLES --- */
+  .form-group { margin-bottom: 20px; }
+  .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #444; }
+  .form-group input, .form-group textarea {
+    width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;
+    font-size: 14px; outline: none; transition: 0.3s;
+  }
+  .form-group input:focus, .form-group textarea:focus { border-color: #1e88e5; box-shadow: 0 0 0 3px rgba(30,136,229,0.1); }
+  .form-group textarea { min-height: 150px; resize: vertical; line-height: 1.6; }
+  
+  .btn-save-log { background: #43a047; color: white; border: none; padding: 12px 30px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 15px; }
+  .btn-save-log:hover { background: #2e7d32; }
+
+  .records-list { margin-top: 30px; border-top: 2px solid #eee; padding-top: 20px; }
+  .record-item {
+    background: #f9f9f9; border-left: 4px solid #1e88e5; padding: 15px;
+    border-radius: 6px; margin-bottom: 15px; position: relative;
+  }
+  .record-meta { font-size: 12px; color: #666; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;}
+  .record-body { white-space: pre-wrap; color: #333; font-size: 14px; margin-bottom: 10px; }
+  
+  /* Action Buttons for Records */
+  .record-actions { display: flex; gap: 8px; justify-content: flex-end; border-top: 1px dashed #ddd; padding-top: 8px; }
+  .btn-sm { padding: 5px 12px; border: none; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
+  .btn-edit { background: #1e88e5; color: white; }
+  .btn-edit:hover { background: #1565c0; }
+  .btn-print { background: #6c757d; color: white; }
+  .btn-print:hover { background: #545b62; }
+  .btn-delete-rec { background: transparent; color: #e53935; border: 1px solid #e53935; }
+  .btn-delete-rec:hover { background: #e53935; color: white; }
+
   /* --- CONTACT LIST STYLES --- */
   .columns-wrapper { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
   @media(max-width: 768px) { .columns-wrapper { grid-template-columns: 1fr; } }
@@ -108,8 +139,7 @@
 
   .notes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
   .note-card {
-    background: #fffbe6; /* Yellowish note color */
-    border: 1px solid #f1e5ac; border-radius: 8px; padding: 20px;
+    background: #fffbe6; border: 1px solid #f1e5ac; border-radius: 8px; padding: 20px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: relative;
   }
   .note-card h4 { color: #333; margin-bottom: 10px; font-size: 16px; border-bottom: 1px dashed #ccc; padding-bottom: 5px; }
@@ -121,6 +151,20 @@
   }
   .note-card .btn-delete-note:hover { opacity: 1; }
 
+  /* --- PRINT STYLES --- */
+  @media print {
+    body { background: white; padding: 0; }
+    header, .btn-back, .form-group, .btn-save-log, .record-actions, .action-buttons, .shift-options, .section-header button { display: none !important; }
+    .container { max-width: 100%; margin: 0; padding: 20px; }
+    .card-container { box-shadow: none; border: none; padding: 0; }
+    .section-view { display: block !important; }
+    #frontPage, #contactSection, #noteSection { display: none !important; }
+    
+    /* Only show the specific log being printed if needed, or show all logs cleanly */
+    .record-item { break-inside: avoid; border: 1px solid #ddd; margin-bottom: 20px; page-break-inside: avoid; }
+    .section-title { color: black; border-bottom: 2px solid black; }
+  }
+
 </style>
 </head>
 <body>
@@ -128,7 +172,7 @@
 <!-- Header -->
 <header>
   <div class="brand">
-    <h1> Akij House BMS</h1>
+    <h1>🏭 Akij House BMS</h1>
     <p>Shift Documentation Portal</p>
   </div>
 </header>
@@ -138,19 +182,19 @@
   <!-- 1. FRONT PAGE VIEW -->
   <div id="frontPage">
     <div class="shift-options">
-      <div class="shift-card shift-A">
+      <div class="shift-card shift-A" onclick="openShiftLog('A')">
         <span class="icon">🌅</span>
         <h2>A Shift</h2>
         <p class="desc">Morning Shift Work</p>
-        <span class="time-badge"> 07:00 AM - 02:00 PM</span>
+        <span class="time-badge">⏰ 07:00 AM - 02:00 PM</span>
       </div>
-      <div class="shift-card shift-B">
+      <div class="shift-card shift-B" onclick="openShiftLog('B')">
         <span class="icon">☀️</span>
         <h2>B Shift</h2>
         <p class="desc">Afternoon Shift Work</p>
-        <span class="time-badge"> 02:00 PM - 10:00 PM</span>
+        <span class="time-badge">⏰ 02:00 PM - 10:00 PM</span>
       </div>
-      <div class="shift-card shift-C">
+      <div class="shift-card shift-C" onclick="openShiftLog('C')">
         <span class="icon">🌙</span>
         <h2>C Shift</h2>
         <p class="desc">Night Shift Work</p>
@@ -161,15 +205,44 @@
     <!-- Action Buttons -->
     <div class="action-buttons">
       <button class="btn-action btn-contacts" onclick="showSection('contactSection')">
-         Emergency Contact List
+         🚨 Emergency Contact List
       </button>
       <button class="btn-action btn-notes" onclick="showSection('noteSection')">
-         Quick Notes / Notepad
+         📝 Quick Notes / Notepad
       </button>
     </div>
   </div>
 
-  <!-- 2. CONTACT LIST SECTION -->
+  <!-- 2. SHIFT WORK LOG SECTION -->
+  <div id="shiftLogSection" class="section-view">
+    <div class="card-container">
+      <div class="section-header">
+        <div class="section-title" id="shiftLogTitle">Shift Work Log</div>
+        <button class="btn-back" onclick="goHome()">← Back to Home</button>
+      </div>
+
+      <form onsubmit="saveShiftLog(event)" id="logForm">
+        <input type="hidden" id="editLogId"> <!-- Hidden field to store ID when editing -->
+        <div class="form-group">
+          <label>📅 Date & Time</label>
+          <input type="datetime-local" id="logDate" required>
+        </div>
+        <div class="form-group">
+          <label>📋 Work Description / Activities</label>
+          <textarea id="logContent" placeholder="Write down your shift activities, observations, or issues here..." required></textarea>
+        </div>
+        <button type="submit" class="btn-save-log" id="saveBtn">💾 Save Log Entry</button>
+        <button type="button" class="btn-back" id="cancelEditBtn" style="display:none; margin-left:10px;" onclick="cancelEdit()">Cancel Edit</button>
+      </form>
+
+      <div class="records-list">
+        <h3 style="color:#0f4c81; margin-bottom:15px;">Previous Logs for this Shift</h3>
+        <div id="shiftLogsList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. CONTACT LIST SECTION -->
   <div id="contactSection" class="section-view">
     <div class="card-container">
       <div class="section-header">
@@ -192,7 +265,7 @@
 
         <!-- Vendors -->
         <div class="column">
-          <div class="col-header col-vendor">️ Vendors (External)</div>
+          <div class="col-header col-vendor">🛠️ Vendors (External)</div>
           <div class="input-row">
             <input type="text" id="vendorName" placeholder="Company/Person Name">
             <input type="email" id="vendorEmail" placeholder="Email Address">
@@ -205,11 +278,11 @@
     </div>
   </div>
 
-  <!-- 3. NOTEPAD SECTION -->
+  <!-- 4. NOTEPAD SECTION -->
   <div id="noteSection" class="section-view">
     <div class="card-container">
       <div class="section-header">
-        <div class="section-title"> Quick Notes / Notepad</div>
+        <div class="section-title">📝 Quick Notes / Notepad</div>
         <button class="btn-back" onclick="goHome()">← Back to Home</button>
       </div>
 
@@ -231,6 +304,8 @@
   // --- DATA STORAGE INITIALIZATION ---
   let contacts = JSON.parse(localStorage.getItem('akijContacts')) || { bms: [], vendor: [] };
   let notes = JSON.parse(localStorage.getItem('akijNotes')) || [];
+  let shiftLogs = JSON.parse(localStorage.getItem('akijShiftLogs')) || [];
+  let currentActiveShift = '';
 
   // --- NAVIGATION FUNCTIONS ---
   function showSection(sectionId) {
@@ -238,10 +313,8 @@
     document.querySelectorAll('.section-view').forEach(el => el.style.display = 'none');
     document.getElementById(sectionId).style.display = 'block';
     
-    // Refresh lists when opening sections
     if(sectionId === 'contactSection') renderContacts();
     if(sectionId === 'noteSection') renderNotes();
-    
     window.scrollTo(0,0);
   }
 
@@ -249,6 +322,138 @@
     document.querySelectorAll('.section-view').forEach(el => el.style.display = 'none');
     document.getElementById('frontPage').style.display = 'block';
     window.scrollTo(0,0);
+  }
+
+  // --- SHIFT LOG LOGIC ---
+  function openShiftLog(shift) {
+    currentActiveShift = shift;
+    document.getElementById('frontPage').style.display = 'none';
+    document.querySelectorAll('.section-view').forEach(el => el.style.display = 'none');
+    
+    document.getElementById('shiftLogSection').style.display = 'block';
+    document.getElementById('shiftLogTitle').innerHTML = `🔄 ${shift} Shift - Work Log`;
+    
+    // Reset form to new entry mode
+    cancelEdit();
+    
+    renderShiftLogs();
+    window.scrollTo(0,0);
+  }
+
+  function saveShiftLog(e) {
+    e.preventDefault();
+    const date = document.getElementById('logDate').value;
+    const content = document.getElementById('logContent').value;
+    const editId = document.getElementById('editLogId').value;
+
+    if(!content.trim()) return;
+
+    if(editId) {
+      // Update existing log
+      const index = shiftLogs.findIndex(l => l.id == editId);
+      if(index !== -1) {
+        shiftLogs[index].date = date;
+        shiftLogs[index].content = content;
+        alert('✅ Log updated successfully!');
+      }
+    } else {
+      // Create new log
+      const newLog = {
+        id: Date.now(),
+        shift: currentActiveShift,
+        date: date,
+        content: content
+      };
+      shiftLogs.unshift(newLog);
+      alert('✅ New log saved successfully!');
+    }
+
+    localStorage.setItem('akijShiftLogs', JSON.stringify(shiftLogs));
+    cancelEdit(); // Reset form
+    renderShiftLogs();
+  }
+
+  function editShiftLog(id) {
+    const log = shiftLogs.find(l => l.id === id);
+    if(log) {
+      document.getElementById('logDate').value = log.date;
+      document.getElementById('logContent').value = log.content;
+      document.getElementById('editLogId').value = log.id;
+      
+      // Change UI to edit mode
+      document.getElementById('saveBtn').innerText = '💾 Update Log';
+      document.getElementById('saveBtn').style.background = '#fb8c00';
+      document.getElementById('cancelEditBtn').style.display = 'inline-block';
+      
+      // Scroll to form
+      document.querySelector('#shiftLogSection .card-container').scrollIntoView({ behavior: 'smooth' });
+      document.getElementById('logContent').focus();
+    }
+  }
+
+  function cancelEdit() {
+    document.getElementById('logForm').reset();
+    document.getElementById('editLogId').value = '';
+    document.getElementById('saveBtn').innerText = '💾 Save Log Entry';
+    document.getElementById('saveBtn').style.background = '#43a047';
+    document.getElementById('cancelEditBtn').style.display = 'none';
+    
+    // Set default date to now
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    document.getElementById('logDate').value = now.toISOString().slice(0,16);
+  }
+
+  function deleteShiftLog(id) {
+    if(confirm('Are you sure you want to delete this log?')) {
+      shiftLogs = shiftLogs.filter(l => l.id !== id);
+      localStorage.setItem('akijShiftLogs', JSON.stringify(shiftLogs));
+      renderShiftLogs();
+    }
+  }
+
+  function printShiftLog(id) {
+    const log = shiftLogs.find(l => l.id === id);
+    if(!log) return;
+
+    // Create a temporary printable window
+    const printWindow = window.open('', '', 'height=600,width=800');
+    printWindow.document.write('<html><head><title>Shift Log Print</title>');
+    printWindow.document.write('<style>body{font-family:Segoe UI,sans-serif;padding:40px;} h1{color:#0f4c81;border-bottom:2px solid #0f4c81;padding-bottom:10px;} .meta{color:#666;margin-bottom:20px;font-size:14px;} .content{white-space:pre-wrap;line-height:1.6;font-size:15px;color:#333;} .footer{margin-top:50px;border-top:1px solid #ccc;padding-top:10px;font-size:12px;color:#999;text-align:center;}</style>');
+    printWindow.document.write('</head><body>');
+    printWindow.document.write(`<h1>${log.shift} Shift Work Log</h1>`);
+    printWindow.document.write(`<div class="meta"><strong>Date:</strong> ${new Date(log.date).toLocaleString()}</div>`);
+    printWindow.document.write(`<div class="content">${escapeHtml(log.content)}</div>`);
+    printWindow.document.write(`<div class="footer">Akij House BMS - Generated on ${new Date().toLocaleString()}</div>`);
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => { printWindow.print(); }, 500);
+  }
+
+  function renderShiftLogs() {
+    const listEl = document.getElementById('shiftLogsList');
+    const filteredLogs = shiftLogs.filter(l => l.shift === currentActiveShift);
+
+    if(filteredLogs.length === 0) {
+      listEl.innerHTML = '<p style="color:#999; text-align:center; padding:20px;">No logs found for this shift yet.</p>';
+      return;
+    }
+
+    listEl.innerHTML = filteredLogs.map(log => `
+      <div class="record-item">
+        <div class="record-meta">
+          <span>📅 ${new Date(log.date).toLocaleString()}</span>
+          <span>🔄 ${log.shift} Shift</span>
+        </div>
+        <div class="record-body">${escapeHtml(log.content)}</div>
+        <div class="record-actions">
+          <button class="btn-sm btn-edit" onclick="editShiftLog(${log.id})">️ Edit</button>
+          <button class="btn-sm btn-print" onclick="printShiftLog(${log.id})">🖨️ Print</button>
+          <button class="btn-sm btn-delete-rec" onclick="deleteShiftLog(${log.id})">🗑️ Delete</button>
+        </div>
+      </div>
+    `).join('');
   }
 
   // --- CONTACT LOGIC ---
@@ -262,7 +467,6 @@
     contacts[type].push({ id: Date.now(), name, email, phone });
     localStorage.setItem('akijContacts', JSON.stringify(contacts));
     
-    // Clear inputs
     document.getElementById(type + 'Name').value = '';
     document.getElementById(type + 'Email').value = '';
     document.getElementById(type + 'Phone').value = '';
